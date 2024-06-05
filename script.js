@@ -1,17 +1,33 @@
+// const photoURLs = [
+//     'imgs/moab2.jpg',
+//     'imgs/antonio1.PNG',
+//     'imgs/alaska2.jpg',
+//     'imgs/moab1.jpg',
+//     'imgs/alaska1.jpg',
+//     'imgs/slo1.jpg',
+//     'imgs/wyoming.jpg',
+//     'imgs/alaska3.jpg',
+//     'imgs/alaska5.jpeg',
+//     'imgs/alaska4.jpeg'
+// ];
+
 const photoURLs = [
     'imgs/moab2.jpg',
-    'imgs/antonio1.PNG',
     'imgs/alaska2.jpg',
-    'imgs/moab1.jpg',
+    'imgs/slo1.jpg',
+    'imgs/antonio1.PNG',
     'imgs/alaska1.jpg',
-    'imgs/wyoming.jpg',
-    'imgs/alaska3.jpg',
     'imgs/alaska5.jpeg',
+    'imgs/alaska3.jpg',
+    'imgs/wyoming.jpg',
+    'imgs/moab1.jpg',
     'imgs/alaska4.jpeg'
 ];
 
+// ALL: used to toggle visibility of home page/nav bar pages
 function showPage(pageId) {
     var sections = document.querySelectorAll('main section');
+
     sections.forEach(function(section) {
         section.style.display = 'none';
     });
@@ -19,12 +35,22 @@ function showPage(pageId) {
     document.getElementById(pageId).style.display = 'block';
    
     var selectedSection = document.getElementById(pageId);
-    if (selectedSection) {
-        selectedSection.style.display = 'block';
-    }
+    selectedSection.style.display = 'block';
+
+    if (pageId === 'Coding') {
+        startWebcam();
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') { // Left arrow
+                change_font_size(-2); // Decrease font size
+            } else if (event.key === 'ArrowRight') { // Right arrow
+                change_font_size(2); // Increase font size
+            }
+        });
+    } 
 }
 
-
+// PHOTOGRAPHY: photo display algo for photography page
 function scale_photos(screenWidth, photoURLs) {
     const scaled_photos = [];
     let rowImages;
@@ -77,28 +103,19 @@ function scale_photos(screenWidth, photoURLs) {
     }
 }
 
-
-function handleResize() {
-    const screenWidth = window.innerWidth || document.documentElement.clientWidth;
-    scale_photos(screenWidth, photoURLs);
-}
-
+// PHOTOGRAPHY: goes through resized photos and displays, adds hover zoom effect and listens for image clicks
 function displayModifiedPhotos(modifiedPhotos) {
     const photoContainer = document.getElementById('photoContainer');
-    // Clear any existing content in the container
     photoContainer.innerHTML = '';
 
-    // Iterate through the modified photos and append them to the container
     modifiedPhotos.forEach(modifiedPhoto => {
         const imageWrapper = document.createElement('div');
+        const image = document.createElement('img');
+
         imageWrapper.classList.add('image-wrapper');
-
-        // Add hover effect class
         imageWrapper.classList.add('hover-zoom');
-
         imageWrapper.style.width = modifiedPhoto.width + 'px';
 
-        const image = document.createElement('img');
         image.src = modifiedPhoto.src;
         image.width = modifiedPhoto.width;
         image.height = modifiedPhoto.height;
@@ -107,26 +124,26 @@ function displayModifiedPhotos(modifiedPhotos) {
         photoContainer.appendChild(imageWrapper);
     });
 
-    // Setup event listener for image expander after images are appended
+    // set up image expander listener
     setupImageExpander();
 }
 
+// PHOTOGRAPHY
+function handleResize() {
+    const screenWidth = window.innerWidth || document.documentElement.clientWidth;
+    scale_photos(screenWidth, photoURLs);
+}
 
-
-
-
-
-// JavaScript to handle click event and expand the image
+// PHOTOGRAPHY: defines what happens on image click, adds event listener for window resize
 function setupImageExpander() {
     const overlay = document.getElementById('overlay');
 
-    // Function to handle image click event
     function handleImageClick(event) {
         const clickedImage = event.currentTarget.querySelector('img');
         const expandedImage = document.createElement('img');
+
         expandedImage.classList.add('expanded-image');
         document.body.appendChild(expandedImage);
-
         expandedImage.src = clickedImage.src;
         overlay.style.display = 'block';
         expandedImage.classList.add('active');
@@ -134,11 +151,9 @@ function setupImageExpander() {
         function resizeExpandedImage() {
             const width = window.innerWidth;
             const height = window.innerHeight;
-    
-            // Calculate the aspect ratio of the image
             const aspectRatio = expandedImage.width / expandedImage.height;
     
-            // Adjust the dimensions while maintaining the aspect ratio
+            // adjust expanded image to look nice (PROPER ASPECT RATIO)
             if (width / aspectRatio < height) {
                 expandedImage.style.width = width + 'px';
                 expandedImage.style.height = 'auto';
@@ -148,49 +163,150 @@ function setupImageExpander() {
             }
         }
     
-        // Call the resize function initially
         resizeExpandedImage();
     
-        // Add event listener for window resize
         window.addEventListener('resize', resizeExpandedImage);
-
-        // Close the expanded image on overlay click
         overlay.addEventListener('click', closeExpandedImage);
     }
 
-    // Function to close the expanded image
+
     function closeExpandedImage() {
         const expandedImage = document.querySelector('.expanded-image');
-        if (expandedImage) {
+        if (expandedImage !== null) {
             expandedImage.classList.remove('active');
             overlay.style.display = 'none';
-            document.body.removeChild(expandedImage); // Remove the expanded image from the DOM
+            document.body.removeChild(expandedImage);
             overlay.removeEventListener('click', closeExpandedImage);
         }
     }
 
-    // Add event listener to each image-wrapper
     const imageWrappers = document.querySelectorAll('.image-wrapper');
+
+    // remove old click listener from each image, add new one **IDK WHY THIS WORKS BUT IT DOES**
     imageWrappers.forEach(imageWrapper => {
-        imageWrapper.removeEventListener('click', handleImageClick); // Remove existing event listener
+        imageWrapper.removeEventListener('click', handleImageClick);
         imageWrapper.addEventListener('click', handleImageClick);
     });
 }
 
+// PHOTOGRAPHY
 document.addEventListener('DOMContentLoaded', function () {
     setupImageExpander();
 });
 
-
-
-
-
+// PHOTOGRAPHY
 window.addEventListener('load', function() {
     handleResize();
 });
 
-// Call the function initially
+// PHOTOGRAPHY
 handleResize();
 
-// Add event listener for window resize
+// PHOTOGRAPHY: listen for window resize to restructure photo arrangement 
 window.addEventListener('resize', handleResize);
+
+
+// CODING: TTimage video stream
+let font_size = 12;
+
+function change_font_size(increment) {
+    font_size += increment;
+    drawFrame();
+}
+
+
+
+function startWebcam() {
+    const videoElement = document.getElementById('webcamVideo');
+    const constraints = { video: true };
+
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+            videoElement.srcObject = stream;
+            processFrames();
+        })
+        .catch(error => {
+            console.error('Error accessing webcam: ', error);
+        });
+}
+
+
+// Function to process video frames and draw ASCII characters
+function processFrames() {
+    const videoElement = document.getElementById('webcamVideo');
+    const canvasElement = document.getElementById('webcamCanvas');
+    const context = canvasElement.getContext('2d');
+
+    function resizeCanvas() {
+        canvasElement.width = videoElement.videoWidth * 2;
+        canvasElement.height = videoElement.videoHeight * 2;
+    }
+
+    videoElement.addEventListener('loadedmetadata', resizeCanvas);
+
+    function drawFrame() {
+        context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+        // Mirror webcam feed
+        context.translate(canvasElement.width, 0);
+        context.scale(-1, 1);
+
+        context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+
+        context.setTransform(1, 0, 0, 1, 0, 0);
+
+        const frame = context.getImageData(0, 0, canvasElement.width, canvasElement.height);
+        const data = frame.data;
+
+        context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+        context.fillStyle = 'black';
+        // let font_size = 12;
+        
+        let spacing = font_size - 2;
+        context.font = '${font_size}px Helvetica';
+
+        for (let y = 0; y < canvasElement.height; y += spacing) {
+            for (let x = 0; x < canvasElement.width; x += spacing) {
+
+                const index = ((y * canvasElement.width) + x) * 4;
+                const red = data[index];
+                const green = data[index + 1];
+                const blue = data[index + 2];
+                const brightness = (red + green + blue) / 3;
+
+                const chars = [[0, ' '],
+                               [70, ','],
+                               [100, '~'],
+                               [150, '*'],
+                               [190, '?'],
+                               [230, '$'],
+                               [245, '#'],
+                               [255, '@']]
+
+                let char = ' ';
+
+                for (let i = 0; i < 8; i++) {
+                    if (chars[i][0] <= brightness  && brightness <= chars[i+1][0]) {
+                        char = chars[i][1];
+                    }
+                }
+
+                if (char == ' ') {
+                    char = chars[7][1];
+                }
+
+                context.fillText(char, x, y);
+            }
+        }
+
+        requestAnimationFrame(drawFrame);
+    }
+
+    videoElement.addEventListener('play', () => {
+        resizeCanvas();
+        requestAnimationFrame(drawFrame);
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+}

@@ -13,24 +13,28 @@
 
     <!-- Playfair Display -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- NAME / HOME PAGE -->
         <h1><a href="#" onclick="showPage('home')">Max Allworth-Miles</a></h1>
     <nav>
         <ul>
+            <!-- NAV BAR -->
             <li><a href="#" onclick="showPage('Photography')">Photography</a></li>
             <li><a href="#" onclick="showPage('Coding')">Coding Projects</a></li>
             <li><a href="#" onclick="showPage('Résumé')">Résumé</a></li>
-            <li><a href="#" onclick="showPage('Strands')">Strands</a></li>
         </ul>
     </nav>
 
+    <!-- MAIN HTML STUFF -->
     <main>
+        <!-- HOME PAGE -->
         <section id="home">
             <p>Hello, world!</p>
         </section>
+
 
         <!-- PHOTOGRAPHY -->
         <section id="Photography" style="display:none;">
@@ -39,39 +43,27 @@
             <div id="overlay"></div>
         </section>
 
+
         <!-- CODING -->
         <section id="Coding" style="display:none;">
             <h2>ASCII Video Generator</h2>
-            <p> I initially wrote this in Python but developed a version in JavaScript for my website.</p>
+                <video id="webcamVideo" autoplay playsinline style="display:none"></video>
+                <canvas id="webcamCanvas"></canvas>
+                <canvas id="ascii"></canvas>
+
+
+            <p> I initially wrote this in Python but later developed a faster JavaScript version for my website.</p>
             <h2>TerminalStats</h2>
             <img src="imgs/term.png" alt="Screenshot of my custom terminal" width=600vw>
             <p> Wrote a C program that elevates the macOS terminal experience with ASCII art 
                 and real-time system stats using various system information retrieval methods. 
-                Try it out for yourself <a href="https://github.com/mallworth/TerminalStats">here</a>!</p>
+                Download it <a href="https://github.com/mallworth/TerminalStats">here</a>!</p>
         </section>
+
 
         <!-- RESUME -->
         <section id="Résumé" style="display:none;"> 
             <embed src="resume.pdf" type="application/pdf" width="100%" height="800px" />
-        </section>
-
-
-        <!-- STRANDS -->
-        <section id="Strands" style="display:none;"> 
-            <p>
-                <!-- <div class="columns"> -->
-                    05/05/2024, Strands #63 <br>
-                    “Tools for the job”<br>
-                    🔵🟡🔵🔵 <br>
-                    🔵🔵🔵🔵 <br>
-                    <br>
-                    05/06/2024, Strands #64<br>
-                    “Signed, Sealed, Delivered”<br>
-                    🔵🔵🔵🔵<br>
-                    🔵🟡🔵<br>
-                <!-- </div> -->
-                
-            </p>
         </section>
     </main>
     
